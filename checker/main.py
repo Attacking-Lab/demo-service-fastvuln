@@ -124,7 +124,7 @@ async def getnoise0(client: httpx.AsyncClient, db: ChainDB, logger: LoggerAdapte
     except (KeyError, AssertionError):
         raise MumbleException("Faulty profile data")
 
-@checker.exploit(0)
+@checker.exploit(0, 0)
 async def exploit0(task: ExploitCheckerTaskMessage, client: httpx.AsyncClient, logger: LoggerAdapter):
     if (task.attack_info or "") == "":
         raise MumbleException("Missing attack info")

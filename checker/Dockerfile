@@ -1,4 +1,4 @@
-FROM python:3.12-slim-bookworm
+FROM python:3.13-slim-bookworm
 
 #RUN apk update && apk add git
 RUN apt update && apt install -y git
@@ -10,8 +10,8 @@ WORKDIR /app
 COPY uv.lock pyproject.toml .
 
 RUN pip install --break-system-packages git-pass-helper==0.2.1
-RUN --mount=type=secret,id=github-pat,env=GITHUB_PAT \
-	git-pass -p "${GITHUB_PAT:?GITHUB PAT not set}" -- uv sync --frozen --exact
+RUN --mount=type=secret,id=checker-pull-token \
+	git-pass -U https://git.atklab.cloud -p "$(cat /run/secrets/checker-pull-token)" -- uv sync --frozen --exact
 
 COPY main.py gunicorn.conf.py .
 

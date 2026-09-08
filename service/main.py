@@ -1,6 +1,5 @@
 from os import environ
 import uuid
-from typing import Dict, Any
 from datetime import datetime, timedelta
 import pymongo
 
@@ -8,7 +7,6 @@ from fastapi import FastAPI, HTTPException, Depends, status, Response, Cookie
 from pydantic import BaseModel, Field
 
 SESSION_LIFETIME_SECONDS = 600
-SESSION_CLEANUP_INTERVAL_SECONDS = 60
 SESSION_COOKIE_NAME = "session_id"
 
 client = pymongo.MongoClient(
@@ -20,8 +18,8 @@ client = pymongo.MongoClient(
 
 db = client["service"]
 users = db["users"]
-
-ACTIVE_SESSIONS: Dict[str, Dict[str, Any]] = {}
+sessions = db["sessions"]
+sessions.create_index("expires_at", expireAfterSeconds=0)
 
 class UserIn(BaseModel):
     username: str = Field(min_length=3, max_length=32)
@@ -45,8 +43,8 @@ class UserProfileUpdate(BaseModel):
 app = FastAPI(title="Dummy HTTP Service")
 
 def get_current_user_id(session_token: str = Cookie("", alias=SESSION_COOKIE_NAME)) -> str:
-    if session_data := ACTIVE_SESSIONS.get(session_token):
-        return session_data["user_id"]
+    if session_doc := sessions.find_one({"_id": session_token}):
+        return session_doc["user_id"]
 
     raise HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -91,10 +89,11 @@ def login_user(user_login: UserLogin, response: Response):
     session_token = str(uuid.uuid4())
     expiration_time = datetime.now() + timedelta(seconds=SESSION_LIFETIME_SECONDS)
 
-    ACTIVE_SESSIONS[session_token] = {
+    sessions.insert_one({
+        "_id": session_token,
         "user_id": user_id,
-        "expires_at": expiration_time
-    }
+        "expires_at": expiration_time,
+    })
 
     max_age_seconds = int(timedelta(seconds=SESSION_LIFETIME_SECONDS).total_seconds())
 
@@ -177,7 +176,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=9000,
+        port=int(environ.get("SERVICE_PORT", 9000)),
         workers=8,
-        log_level="info"
+        log_level="info",
     )

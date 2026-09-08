@@ -5,17 +5,25 @@ services:
     build:
       context: .
       secrets:
-        - github-pat
+        - checker-pull-token
     ports:
-      - "${CHECKER_BIND:-}:${CHECKER_PORT:-8000}:8000"
+      - "${CHECKER_PORT:-8000}:8000"
     environment:
       - MONGO_ENABLED=1
       - MONGO_HOST=mongo
       - MONGO_PORT=27017
       - MONGO_USER=mongo
       - MONGO_PASSWORD=mongo
-      - CHECKER_PORT=${CHECKER_PORT:-8000}
-      - SERVICE_PORT=${SERVICE_PORT:-9000}
+    restart: unless-stopped
+    depends_on:
+      mongo:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/service')"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
 
   mongo:
     image: mongo
@@ -24,13 +32,20 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: mongo
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+      start_period: 5s
 
 volumes:
   mongodb:
 
 secrets:
-  github-pat:
-    environment: GITHUB_PAT
+  checker-pull-token:
+    environment: CHECKER_PULL_TOKEN
 
 networks:
   default:
