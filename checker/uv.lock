@@ -7,7 +7,7 @@ resolution-markers = [
 ]
 
 [manifest]
-overrides = [{ name = "enochecker-core", git = "https://git.atklab.cloud/atklab/enochecker-core?rev=v0.16.0" }]
+overrides = [{ name = "enochecker-core", git = "https://git.atklab.cloud/atklab/enochecker-core?rev=v0.19.0" }]
 
 [[package]]
 name = "annotated-doc"
@@ -189,12 +189,12 @@ dev = [
 
 [package.metadata]
 requires-dist = [
-    { name = "enochecker-core", git = "https://git.atklab.cloud/atklab/enochecker-core?rev=v0.16.0" },
-    { name = "enochecker3", git = "https://git.atklab.cloud/atklab/enochecker3?rev=v0.16.0" },
+    { name = "enochecker-core", git = "https://git.atklab.cloud/atklab/enochecker-core?rev=v0.19.0" },
+    { name = "enochecker3", git = "https://git.atklab.cloud/atklab/enochecker3?rev=v0.21.0" },
 ]
 
 [package.metadata.requires-dev]
-dev = [{ name = "enochecker-test", specifier = ">=0.14.4" }]
+dev = [{ name = "enochecker-test", git = "https://git.atklab.cloud/atklab/enochecker-test?rev=v0.18.1" }]
 
 [[package]]
 name = "click"
@@ -239,16 +239,16 @@ wheels = [
 
 [[package]]
 name = "enochecker-core"
-version = "0.16.0"
-source = { git = "https://git.atklab.cloud/atklab/enochecker-core?rev=v0.16.0#ea0bbf270ec31f991a057b138db0cc738889b428" }
+version = "0.19.0"
+source = { git = "https://git.atklab.cloud/atklab/enochecker-core?rev=v0.19.0#bf0de6d49878aa536363daa2a15a81c025f96fa7" }
 dependencies = [
     { name = "pydantic" },
 ]
 
 [[package]]
 name = "enochecker-test"
-version = "0.14.4"
-source = { registry = "https://pypi.org/simple" }
+version = "0.18.1"
+source = { git = "https://git.atklab.cloud/atklab/enochecker-test?rev=v0.18.1#47e2517c794ae4ed6d28d496f3c04fbde766022e" }
 dependencies = [
     { name = "docker" },
     { name = "enochecker-core" },
@@ -261,15 +261,11 @@ dependencies = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/26/56/9b4726a2c2f8f125e7cf843bdb620ae43a5472dbe337b40c490afcc9eb5e/enochecker_test-0.14.4.tar.gz", hash = "sha256:a3350154e6001571c808b86434b8c54941e30e5f43e150a749df007deb00645c", size = 10627, upload-time = "2026-06-09T15:52:40.568Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/92/aa/2800dc4c8fdcd0cf4cb545f47686a832497a57baa6f1cafc052f28b2b321/enochecker_test-0.14.4-py3-none-any.whl", hash = "sha256:c0177b173e95901511478a25873554351b37287712dd3984ec293dcec02f84d6", size = 10800, upload-time = "2026-06-09T15:52:39.585Z" },
-]
 
 [[package]]
 name = "enochecker3"
-version = "0.16.0"
-source = { git = "https://git.atklab.cloud/atklab/enochecker3?rev=v0.16.0#edc1518b8acaa00c9500a21cafff57d4e69ded87" }
+version = "0.21.0"
+source = { git = "https://git.atklab.cloud/atklab/enochecker3?rev=v0.21.0#1a4a95b900538e7b76802f91bf683cf554be8d42" }
 dependencies = [
     { name = "enochecker-core" },
     { name = "fastapi" },

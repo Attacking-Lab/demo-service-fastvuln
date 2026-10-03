@@ -1,5 +1,4 @@
 from logging import LoggerAdapter
-from re import L
 from enochecker3 import ChainDB, Enochecker, GetflagCheckerTaskMessage, MumbleException, PutflagCheckerTaskMessage
 from random import Random
 from enochecker3.types import ExploitCheckerTaskMessage
@@ -75,13 +74,10 @@ async def putflag0(task: PutflagCheckerTaskMessage, client: httpx.AsyncClient, r
 
 @checker.getflag(0)
 async def getflag0(task: GetflagCheckerTaskMessage, client: httpx.AsyncClient, db: ChainDB, logger: LoggerAdapter):
-    try:
-        userdata = await db.get("userdata")
-    except KeyError:
-        raise MumbleException("Missing data from previous round")
+    userdata = await db.get("userdata")
     await login(client, userdata, logger)
+    profile = await get_profile(client, logger)
     try:
-        profile = await get_profile(client, logger)
         flag = profile["bio"].split()[-1]
         assert flag == task.flag
     except (KeyError, AssertionError):
@@ -112,14 +108,11 @@ async def putnoise0(client: httpx.AsyncClient, db: ChainDB, random: Random, logg
 
 @checker.getnoise(0)
 async def getnoise0(client: httpx.AsyncClient, db: ChainDB, logger: LoggerAdapter):
-    try:
-        userdata = await db.get("userdata")
-        dish = await db.get("dish")
-    except KeyError:
-        raise MumbleException("Missing data from previous round")
+    userdata = await db.get("userdata")
+    dish = await db.get("dish")
     await login(client, userdata, logger)
+    profile = await get_profile(client, logger)
     try:
-        profile = await get_profile(client, logger)
         assert dish in profile["bio"]
     except (KeyError, AssertionError):
         raise MumbleException("Faulty profile data")
